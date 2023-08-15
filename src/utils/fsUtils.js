@@ -1,31 +1,27 @@
 const fs = require('fs').promises;
-const path = require('path');
+// const path = require('path');
 
-const TALKER_DATA_PATH = '.././talker.json';
+const TALKER_DATA_PATH = 'src/talker.json';
 
-async function readTalkers() {
+async function readTalker() {
   try {
-    const data = await fs.readFile(path.resolve(__dirname, TALKER_DATA_PATH));
+    const data = await fs.readFile(TALKER_DATA_PATH);
     const talkers = JSON.parse(data);
-
     return talkers;
   } catch (error) {
     console.error(`Erro de leitura: ${error}`);
   }
 }
 
-async function writeTalkers(newTalker) {
+async function writeTalker(data) {
   try {
-    const oldTalkers = await readTalkers();
-    const newTalkers = JSON.stringify([...oldTalkers, newTalker]);
-
-    await fs.writeFile(path.resolve(__dirname, TALKER_DATA_PATH), newTalkers);
+    await fs.writeFile(TALKER_DATA_PATH, JSON.stringify(data));
   } catch (error) {
-    console.error(`Erro de leitura: ${error}`);
+    console.error(`Erro de escrita: ${error}`);
   }
 }
 
 module.exports = {
-  readTalkers,
-  writeTalkers,
+  readTalker,
+  writeTalker,
 };

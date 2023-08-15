@@ -1,8 +1,9 @@
 const express = require('express');
-const { readTalkers } = require('./utils/fsUtils');
+const { readTalker, writeTalker } = require('./utils/fsUtils');
 const { talkerByID } = require('./middlewares/talkerByID');
 const { generateToken } = require('./utils/randonToken');
-const { validadeData } = require('./middlewares/validateData');
+const { loginAuth, tokenAuth, bodyAuth } = require('./middlewares/validateData');
+const generateNewID = require('./utils/newID');
 
 const app = express();
 app.use(express.json());
@@ -16,7 +17,7 @@ app.get('/', (_request, response) => {
 });
 
 app.get('/talker', async (req, res) => {
-  const talkers = await readTalkers();
+  const talkers = await readTalker();
 
   return res.status(200).json(talkers);
 });
@@ -26,9 +27,21 @@ app.get('/talker/:id', talkerByID, async (req, res) => {
   res.status(200).json(talker);
 });
 
-app.post('/login', validadeData, async (req, res) => {
+app.post('/login', loginAuth, async (req, res) => {
   const token = { token: generateToken() };
   res.status(200).json(token);
+});
+
+app.use(tokenAuth);
+
+app.post('/talker', bodyAuth, async (req, res) => {
+  const { name, age, talk } = req.body;
+  const talkers = await readTalker();
+  const newID = generateNewID(talkers);
+  const talker = { id: newID, name, age, talk };
+  talkers.push(talker);
+  await writeTalker(talkers);
+  res.status(201).json(talker);
 });
 
 app.listen(PORT, () => {
