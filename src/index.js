@@ -1,6 +1,7 @@
 const express = require('express');
 const { readTalkers } = require('./utils/fsUtils');
 const { talkerByID } = require('./middlewares/talkerByID');
+const { generateToken } = require('./utils/randonToken');
 
 const app = express();
 app.use(express.json());
@@ -22,6 +23,11 @@ app.get('/talker', async (req, res) => {
 app.get('/talker/:id', talkerByID, async (req, res) => {
   const { talker } = req;
   res.status(200).json(talker);
+});
+
+app.post('/login', async (req, res) => {
+  const token = { token: generateToken() };
+  res.status(200).json(token);
 });
 
 app.listen(PORT, () => {
