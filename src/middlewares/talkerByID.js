@@ -1,14 +1,15 @@
-const { readTalkers } = require('../utils/fsUtils');
+const { readTalker } = require('../utils/fsUtils');
 
 async function talkerByID(req, res, next) {
-  const talkers = await readTalkers();
+  const talkers = await readTalker();
   const talker = talkers.find((element) => element.id === Number(req.params.id));
-  if (!talker) {
+  if (talker) {
+    req.talker = talker;
+    next();
+  } else {
     return res.status(404).json({ message: 'Pessoa palestrante não encontrada' });
-  }
-  req.talker = talker;
-  next();
-  }
+  } 
+}
 
 module.exports = {
   talkerByID,

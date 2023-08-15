@@ -18,7 +18,6 @@ app.get('/', (_request, response) => {
 
 app.get('/talker', async (req, res) => {
   const talkers = await readTalker();
-
   return res.status(200).json(talkers);
 });
 
@@ -36,12 +35,28 @@ app.use(tokenAuth);
 
 app.post('/talker', bodyAuth, async (req, res) => {
   const { name, age, talk } = req.body;
+
   const talkers = await readTalker();
+
   const newID = generateNewID(talkers);
   const talker = { id: newID, name, age, talk };
   talkers.push(talker);
+
   await writeTalker(talkers);
   res.status(201).json(talker);
+});
+
+app.put('/talker/:id', talkerByID, bodyAuth, async (req, res) => {
+  const { name, age, talk } = req.body;
+  const { id } = req.params;
+  const talkers = req;
+
+  const index = talkers.findIndex((element) => element.id === parseInt(id, 10));
+  const updatedTalker = { id: Number(id), name, age, talk };
+  talkers[index] = updatedTalker;
+
+  await writeTalker(talkers);
+  res.status(200).json(updatedTalker);
 });
 
 app.listen(PORT, () => {
