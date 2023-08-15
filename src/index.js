@@ -24,9 +24,6 @@ app.get('/talker/:id', talkerByID, async (req, res) => {
   res.status(200).json(talker);
 });
 
-app.use((_error, _req, res, _next) => 
-  res.status(404).json({ message: 'Pessoa palestrante não encontrada' }));
-
 app.listen(PORT, () => {
   console.log('Online');
 });
