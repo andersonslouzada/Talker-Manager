@@ -5,6 +5,7 @@ const filters = require('./middlewares/filters');
 const { generateToken } = require('./utils/randonToken');
 const { readTalker, writeTalker } = require('./utils/fsUtils');
 const generateNewID = require('./utils/newID');
+const validateRate = require('./utils/validateRate');
 
 const app = express();
 app.use(express.json());
@@ -74,6 +75,25 @@ app.delete('/talker/:id', validateId, async (req, res) => {
     talkers.splice(index, 1);
     await writeTalker(talkers);
   }
+  res.status(204).send();
+});
+
+app.patch('/talker/rate/:id', validateId, async (req, res) => {
+  const { talker } = req;
+  const { rate } = req.body;
+
+  if (rate === undefined) {
+    return res.status(400).json({ message: 'O campo "rate" é obrigatório' }); 
+  }
+  if (!validateRate(Number(rate))) {
+    console.log('ok no if do validate');
+    return res.status(400)
+      .json({ message: 'O campo "rate" deve ser um número inteiro entre 1 e 5' });
+  }
+
+  talker.talk.rate = rate;
+  await writeTalker([talker]);
+
   res.status(204).send();
 });
 
