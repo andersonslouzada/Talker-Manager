@@ -16,6 +16,19 @@ app.get('/', (_request, response) => {
   response.status(HTTP_OK_STATUS).send();
 });
 
+app.get('/talker/search', tokenAuth, async (req, res) => {
+  const talkers = await readTalker();
+  const { q } = req.query;
+  if (!q) {
+   return res.status(200).json(talkers);
+  }
+  
+  const response = talkers.filter((talker) => 
+    talker.name.toUpperCase().includes(q.toUpperCase()));
+
+  res.status(200).json(response);
+});
+
 app.get('/talker', async (req, res) => {
   const talkers = await readTalker();
   return res.status(200).json(talkers);
