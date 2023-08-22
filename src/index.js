@@ -1,8 +1,9 @@
 const express = require('express');
-const { readTalker, writeTalker } = require('./utils/fsUtils');
 const { validateId } = require('./middlewares/validateId');
-const { generateToken } = require('./utils/randonToken');
 const { loginAuth, tokenAuth, bodyAuth } = require('./middlewares/validateData');
+const filters = require('./middlewares/filters');
+const { generateToken } = require('./utils/randonToken');
+const { readTalker, writeTalker } = require('./utils/fsUtils');
 const generateNewID = require('./utils/newID');
 
 const app = express();
@@ -16,17 +17,8 @@ app.get('/', (_request, response) => {
   response.status(HTTP_OK_STATUS).send();
 });
 
-app.get('/talker/search', tokenAuth, async (req, res) => {
-  const talkers = await readTalker();
-  const { q } = req.query;
-  if (!q) {
-   return res.status(200).json(talkers);
-  }
-  
-  const response = talkers.filter((talker) => 
-    talker.name.toUpperCase().includes(q.toUpperCase()));
-
-  res.status(200).json(response);
+app.get('/talker/search', tokenAuth, filters, async (req, res) => {
+    res.status(200).json(req.data);
 });
 
 app.get('/talker', async (req, res) => {

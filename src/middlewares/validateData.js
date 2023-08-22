@@ -1,3 +1,5 @@
+const validateRate = require('../utils/validateRate');
+
 const emailRegex = /^\S+@\S+\.\S+$/;
 const dateRegex = /^(0[1-9]|[12][0-9]|3[01])\/(0[1-9]|1[0-2])\/\d{4}$/;
 
@@ -84,7 +86,7 @@ function validateKeys(req, res, next) {
   if (!dateRegex.test(watchedAt)) {
     return res.status(400).json({ message: 'O campo "watchedAt" deve ter o formato "dd/mm/aaaa"' });
   }
-  if (Number(rate) < 1 || Number(rate) > 5 || !Number.isInteger(rate)) {
+  if (!validateRate(rate)) {
     return res.status(400)
       .json({ message: 'O campo "rate" deve ser um número inteiro entre 1 e 5' });
   }
