@@ -47,9 +47,9 @@ app.post('/talker', bodyAuth, async (req, res) => {
 });
 
 app.put('/talker/:id', validateId, bodyAuth, async (req, res) => {
+  const talkers = await readTalker();
   const { name, age, talk } = req.body;
   const { id } = req.params;
-  const talkers = await readTalker();
 
   const index = talkers.findIndex((element) => element.id === parseInt(id, 10));
   const updatedTalker = { id: Number(id), name, age, talk };
@@ -57,6 +57,19 @@ app.put('/talker/:id', validateId, bodyAuth, async (req, res) => {
 
   await writeTalker(talkers);
   res.status(200).json(updatedTalker);
+});
+
+app.delete('/talker/:id', validateId, async (req, res) => {
+  const talkers = await readTalker();
+  const { id } = req.params;
+  
+  const index = talkers.findIndex((element) => element.id === parseInt(id, 10));
+  console.log(index);
+  if (index !== -1) {
+    talkers.splice(index, 1);
+    await writeTalker(talkers);
+  }
+  res.status(204).send();
 });
 
 app.listen(PORT, () => {
