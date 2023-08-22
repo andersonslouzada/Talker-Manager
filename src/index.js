@@ -1,6 +1,6 @@
 const express = require('express');
 const { readTalker, writeTalker } = require('./utils/fsUtils');
-const { talkerByID } = require('./middlewares/talkerByID');
+const { validateId } = require('./middlewares/validateId');
 const { generateToken } = require('./utils/randonToken');
 const { loginAuth, tokenAuth, bodyAuth } = require('./middlewares/validateData');
 const generateNewID = require('./utils/newID');
@@ -21,7 +21,7 @@ app.get('/talker', async (req, res) => {
   return res.status(200).json(talkers);
 });
 
-app.get('/talker/:id', talkerByID, async (req, res) => {
+app.get('/talker/:id', validateId, async (req, res) => {
   const { talker } = req;
   res.status(200).json(talker);
 });
@@ -46,10 +46,10 @@ app.post('/talker', bodyAuth, async (req, res) => {
   res.status(201).json(talker);
 });
 
-app.put('/talker/:id', talkerByID, bodyAuth, async (req, res) => {
+app.put('/talker/:id', validateId, bodyAuth, async (req, res) => {
   const { name, age, talk } = req.body;
   const { id } = req.params;
-  const talkers = req;
+  const talkers = await readTalker();
 
   const index = talkers.findIndex((element) => element.id === parseInt(id, 10));
   const updatedTalker = { id: Number(id), name, age, talk };

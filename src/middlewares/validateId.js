@@ -1,6 +1,6 @@
 const { readTalker } = require('../utils/fsUtils');
 
-async function talkerByID(req, res, next) {
+async function validateId(req, res, next) {
   const talkers = await readTalker();
   const talker = talkers.find((element) => element.id === Number(req.params.id));
   if (talker) {
@@ -12,5 +12,5 @@ async function talkerByID(req, res, next) {
 }
 
 module.exports = {
-  talkerByID,
+  validateId,
 };
